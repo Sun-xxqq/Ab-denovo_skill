@@ -1,0 +1,192 @@
+{
+  "schema_version": 1,
+  "host": "localhost",
+  "conda_root": "/opt/agent-ab/deps/conda",
+  "project_root": "/opt/agent-ab/project",
+  "storage": {
+    "runs_root": "/opt/agent-ab/project/runs",
+    "min_free_gb_plan": 5,
+    "min_free_gb_run": 30,
+    "warn_free_gb": 50
+  },
+  "off_target_screening": {
+    "enabled": false
+  },
+  "tools": {
+    "iggm": {
+      "path": "/opt/agent-ab/deps/IgGM",
+      "env": "/opt/agent-ab/deps/conda-envs/IgGM",
+      "role": "postscreen_affinity_maturation_variant_generator",
+      "required": false,
+      "automatic": {
+        "enabled": true,
+        "trigger": "stage2_on_target_and_off_target_pass_after_rosettafix",
+        "preserve_stage2_fixed_positions": true,
+        "num_samples": 1,
+        "steps": 10,
+        "chunk_size": 16,
+        "temperature": 1.0,
+        "max_antigen_size": 384,
+        "stage3_specificity_screening": true
+      },
+      "model_source": "Zenodo record 16909543",
+      "required_paths": [
+        "/opt/agent-ab/deps/IgGM/design.py",
+        "/opt/agent-ab/deps/IgGM/checkpoints/esm_ppi_650m_ab.pth",
+        "/opt/agent-ab/deps/IgGM/checkpoints/antibody_design_trunk.pth",
+        "/opt/agent-ab/deps/IgGM/checkpoints/igso3_buffer.pth"
+      ]
+    },
+    "rfdiffusion": {
+      "path": "/opt/agent-ab/deps/RFdiffusion-src/RFdiffusion",
+      "env": "SE3nv",
+      "role": "alternate_binder_backbone_generation",
+      "required": false
+    },
+    "proteinmpnn": {
+      "path": "/opt/agent-ab/deps/ProteinMPNN",
+      "env": "mlfold",
+      "role": "fixed_backbone_sequence_design",
+      "required": false
+    },
+    "ipsae": {
+      "path": "/opt/agent-ab/deps/IPSAE",
+      "env": "base",
+      "role": "interface_confidence_scoring",
+      "required": true,
+      "required_paths": [
+        "/opt/agent-ab/deps/IPSAE/ipsae.py"
+      ]
+    },
+    "pyrosetta": {
+      "env": "pyrosetta",
+      "role": "interface_energy_and_relax",
+      "required": false
+    },
+    "boltzgen": {
+      "path": "/opt/agent-ab/deps/conda/envs/boltzgen",
+      "env": "boltzgen",
+      "role": "alternate_binder_generation",
+      "required": false,
+      "cache_dir": "/opt/agent-ab/deps/boltzgen-ckpt",
+      "required_paths": [
+        "/opt/agent-ab/deps/boltzgen-ckpt"
+      ]
+    },
+    "protenix": {
+      "path": "/opt/agent-ab/deps/Protenix",
+      "env": "protenix",
+      "role": "independent_complex_prediction",
+      "required": true,
+      "model": "protenix_mini_esm_v0.5.0",
+      "weights": "/opt/agent-ab/deps/protenix-data/checkpoint/protenix_mini_esm_v0.5.0.pt",
+      "root_dir": "/opt/agent-ab/deps/protenix-data",
+      "data_dir": "/opt/agent-ab/deps/protenix-data/common",
+      "checkpoint_dir": "/opt/agent-ab/deps/protenix-data/checkpoint",
+      "required_paths": [
+        "/opt/agent-ab/deps/protenix-data/common",
+        "/opt/agent-ab/deps/protenix-data/checkpoint"
+      ]
+    },
+    "chai": {
+      "path": "/opt/agent-ab/deps/chai-lab",
+      "env": "chai",
+      "role": "independent_complex_prediction",
+      "required": false,
+      "weights": "/opt/agent-ab/deps/conda/envs/chai/lib/python3.12/site-packages/downloads",
+      "required_paths": [
+        "/opt/agent-ab/deps/conda/envs/chai/lib/python3.12/site-packages/downloads"
+      ]
+    },
+    "rfdiffusion3": {
+      "path": "/opt/agent-ab/deps/foundry",
+      "env": "foundry",
+      "role": "alternate_all_atom_generation_and_rf3_prediction",
+      "required": false,
+      "weights": "/opt/agent-ab/deps/RF3/ckpt",
+      "required_paths": [
+        "/opt/agent-ab/deps/RF3/ckpt"
+      ]
+    },
+    "ppiflow": {
+      "path": "/opt/agent-ab/deps/PPIFlow",
+      "env": "ppiflow_af3",
+      "role": "primary_antibody_binder_pipeline",
+      "required": true,
+      "backbone_parallel_gpus": 4,
+      "weights_dir": "/opt/agent-ab/deps/PPIFlow/weigths",
+      "required_paths": [
+        "/opt/agent-ab/deps/PPIFlow/pipeline.py",
+        "/opt/agent-ab/deps/PPIFlow/weigths/binder.ckpt",
+        "/opt/agent-ab/deps/PPIFlow/weigths/antibody.ckpt",
+        "/opt/agent-ab/deps/PPIFlow/weigths/nanobody.ckpt",
+        "/opt/agent-ab/deps/PPIFlow/weigths/monomer.ckpt",
+        "/opt/agent-ab/deps/PPIFlow/tools/flowpacker/config/inference/base.yaml"
+      ]
+    }
+  },
+  "workflow_catalog": {
+    "backbone_generation": {
+      "default": "ppiflow",
+      "choices": [
+        "ppiflow",
+        "rfdiffusion",
+        "rfdiffusion3",
+        "boltzgen"
+      ]
+    },
+    "sequence_design": {
+      "default": "ppiflow_mpnn",
+      "choices": [
+        "ppiflow_mpnn",
+        "proteinmpnn"
+      ]
+    },
+    "sidechain_packing": {
+      "default": "ppiflow_flowpacker",
+      "choices": [
+        "ppiflow_flowpacker",
+        "pyrosetta"
+      ]
+    },
+    "complex_prediction": {
+      "default": "protenix",
+      "choices": [
+        "protenix",
+        "chai",
+        "rfdiffusion3",
+        "ppiflow_af3score"
+      ]
+    },
+    "interface_scoring": {
+      "default": "ipsae",
+      "choices": [
+        "ipsae",
+        "pyrosetta"
+      ]
+    }
+  },
+  "default_frameworks": {
+    "antibody": {
+      "structure": "/opt/agent-ab/deps/PPIFlow/example/target_and_framework_pdb/6nou_scfv_framework.pdb",
+      "heavy_chain": "A",
+      "light_chain": "B"
+    },
+    "nanobody": {
+      "structure": "/opt/agent-ab/deps/PPIFlow/example/target_and_framework_pdb/7eow_nanobody_framework.pdb",
+      "heavy_chain": "A"
+    }
+  },
+  "large_assets": {
+    "boltzgen_cache": "/opt/agent-ab/deps/boltzgen-ckpt",
+    "chai_weights": "/opt/agent-ab/deps/conda/envs/chai/lib/python3.12/site-packages/downloads",
+    "ppiflow_weights": "/opt/agent-ab/deps/PPIFlow/weigths",
+    "protenix_common": "/opt/agent-ab/deps/protenix-data/common",
+    "protenix_checkpoint": "/opt/agent-ab/deps/protenix-data/checkpoint",
+    "rf3_weights": "/opt/agent-ab/deps/RF3/ckpt"
+  },
+  "home_compat_links": {
+    "common": "/opt/agent-ab/deps/protenix-data/common",
+    "checkpoint": "/opt/agent-ab/deps/protenix-data/checkpoint"
+  }
+}

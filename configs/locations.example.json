@@ -1,0 +1,21 @@
+{
+  "ppiflow": {
+    "path": "/absolute/path/to/PPIFlow",
+    "env": "/absolute/path/to/ppiflow-env"
+  },
+  "protenix": {
+    "path": "/absolute/path/to/Protenix",
+    "env": "/absolute/path/to/protenix-env",
+    "weights": "/absolute/path/to/checkpoint/protenix_mini_esm_v0.5.0.pt",
+    "root_dir": "/absolute/path/to/protenix-data",
+    "checkpoint_dir": "/absolute/path/to/checkpoint",
+    "data_dir": "/absolute/path/to/common"
+  },
+  "ipsae": {
+    "path": "/absolute/path/to/IPSAE"
+  },
+  "iggm": {
+    "path": "/absolute/path/to/IgGM",
+    "env": "/absolute/path/to/iggm-env"
+  }
+}

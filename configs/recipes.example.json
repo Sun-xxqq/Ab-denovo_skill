@@ -1,0 +1,26 @@
+{
+  "ipsae": {
+    "cwd": "/absolute/path/to/approved-packages",
+    "commands": [
+      [
+        "sha256sum",
+        "--check",
+        "ipsae.tar.gz.sha256"
+      ],
+      [
+        "mkdir",
+        "-p",
+        "/absolute/path/to/IPSAE"
+      ],
+      [
+        "tar",
+        "-xf",
+        "ipsae.tar.gz",
+        "-C",
+        "/absolute/path/to/IPSAE",
+        "--no-same-owner",
+        "--no-same-permissions"
+      ]
+    ]
+  }
+}
