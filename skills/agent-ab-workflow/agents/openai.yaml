@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agent-Ab 固定端到端流程"
+  short_description: "按原有参数运行完整抗体设计流程，交付候选与筛选报告，暂停点明确"
+  default_prompt: "使用 $agent-ab-workflow，按现有输入和固定 pipeline 执行抗体设计任务，保留原端到端输出，不自主调整设计策略。"

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agent-Ab 异机预检与配置"
+  short_description: "检查目标服务器的 Agent-Ab 软件环境、配置缺项并导出软件盘点"
+  default_prompt: "使用 $agent-ab-portable 在目标服务器盘点 Agent-Ab 依赖，复用现有安装并生成配置报告。"

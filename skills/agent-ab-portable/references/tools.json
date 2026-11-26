@@ -1,0 +1,265 @@
+{
+  "ppiflow": {
+    "label": "PPIFlow",
+    "role": "固定流程核心",
+    "names": [
+      "PPIFlow",
+      "ppiflow"
+    ],
+    "env": "ppiflow_af3",
+    "entry": "pipeline.py",
+    "assets": [
+      "weigths/antibody.ckpt",
+      "weigths/binder.ckpt",
+      "weigths/nanobody.ckpt",
+      "weigths/monomer.ckpt"
+    ],
+    "source": "https://github.com/Mingchenchen/PPIFlow#environment-and-installation",
+    "install_guide": "按目标版本的上游 Install.sh 准备运行环境。单独核对 pipeline.py、ppiflow_af3 环境和 weigths/ 下的模型。"
+  },
+  "abmpnn": {
+    "label": "AbMPNN",
+    "role": "固定流程序列设计",
+    "parent": "ppiflow",
+    "subdir": "tools/AbMPNN",
+    "env": "ppiflow_af3",
+    "entry": "protein_mpnn_run.py",
+    "assets": [
+      "model_weights/abmpnn.pt"
+    ],
+    "source": "https://github.com/Mingchenchen/PPIFlow#external-model-requirements",
+    "install_guide": "按 PPIFlow 随附工具的说明核对 tools/AbMPNN 中的 protein_mpnn_run.py 与 model_weights/abmpnn.pt。"
+  },
+  "flowpacker": {
+    "label": "FlowPacker",
+    "role": "固定流程侧链打包",
+    "parent": "ppiflow",
+    "subdir": "tools/flowpacker",
+    "env": "ppiflow_af3",
+    "entry": "sampler_pdb_antibody.py",
+    "assets": [
+      "config/inference/base.yaml",
+      "checkpoints/cluster.pth",
+      "checkpoints/bc40.pth",
+      "checkpoints/confidence.pth"
+    ],
+    "source": "https://gitlab.com/mjslee0921/flowpacker",
+    "install_guide": "按上游说明获取模型。核对 PPIFlow 的 tools/flowpacker 下有推理配置、启动脚本和各个 checkpoint。"
+  },
+  "af3score": {
+    "label": "AF3Score",
+    "role": "PPIFlow 配套打分资产，按实际任务核对",
+    "parent": "ppiflow",
+    "subdir": "tools/AF3Score",
+    "env": "ppiflow_af3",
+    "entry": "run_af3score.py",
+    "assets": [
+      "af3_data",
+      "Alphafold3params"
+    ],
+    "source": "https://github.com/Mingchenchen/AF3Score",
+    "install_guide": "按 AF3Score 上游说明准备工具，再按 AlphaFold 3 官方渠道取得数据库和可用的模型参数。项目预期两个资产目录都有内容。"
+  },
+  "rosetta": {
+    "label": "Rosetta / rosetta_scripts",
+    "role": "结构修复与松弛，按任务核对",
+    "parent": "ppiflow",
+    "subdir": "rosetta.binary.linux.release-371",
+    "entry": "main/source/bin/rosetta_scripts.static.linuxgccrelease",
+    "binary": true,
+    "source": "https://rosettacommons.org/",
+    "install_guide": "按适用授权获取当前流程所需的 Linux 软件。检查 PPIFlow 根目录下 release-371 的 rosetta_scripts 二进制是否可执行。"
+  },
+  "dockq": {
+    "label": "DockQ",
+    "role": "PPIFlow 配套质量指标",
+    "env": "ppiflow_af3",
+    "entry": "bin/DockQ",
+    "binary": true,
+    "env_root": true,
+    "package": "DockQ",
+    "verify": [
+      "--help"
+    ],
+    "source": "https://github.com/wallnerlab/DockQ#installation",
+    "install_guide": "在该阶段使用的 Python 环境安装 DockQ，运行 DockQ --help，核对 NumPy 与编译扩展兼容。"
+  },
+  "protenix": {
+    "label": "Protenix",
+    "role": "当前固定流程复合物预测",
+    "names": [
+      "Protenix",
+      "protenix"
+    ],
+    "env": "protenix",
+    "entry": "runner/inference.py",
+    "asset_keys": [
+      "weights",
+      "root_dir",
+      "data_dir",
+      "checkpoint_dir"
+    ],
+    "model": "protenix_mini_esm_v0.5.0",
+    "package": "protenix",
+    "source": "https://github.com/bytedance/Protenix/blob/main/docs/training_inference_instructions.md",
+    "install_guide": "按目标版本的本地源码教程安装。核对 runner/inference.py、解释器、模型 checkpoint、common 和 checkpoint 目录，并用 locations 填实际位置。"
+  },
+  "ipsae": {
+    "label": "ipSAE",
+    "role": "当前固定流程界面置信度",
+    "names": [
+      "IPSAE",
+      "ipsae",
+      "ipSAE"
+    ],
+    "env": "base",
+    "entry": "ipsae.py",
+    "source": "https://github.com/DunbrackLab/IPSAE#installation",
+    "install_guide": "按官方 README 获取 ipsae.py。用实际运行它的 Python 验证 NumPy 可导入。",
+    "import": "numpy"
+  },
+  "pyrosetta": {
+    "label": "PyRosetta",
+    "role": "能量与松弛，按任务核对",
+    "env": "pyrosetta",
+    "entry": "bin/python",
+    "env_root": true,
+    "binary": true,
+    "package": "pyrosetta",
+    "import": "pyrosetta",
+    "source": "https://www.pyrosetta.org/",
+    "install_guide": "获取与 Python 和操作系统匹配且有权使用的发行版，检查目标环境能否导入 pyrosetta。"
+  },
+  "iggm": {
+    "label": "IgGM",
+    "role": "由当前任务配置启用",
+    "names": [
+      "IgGM",
+      "iggm"
+    ],
+    "env": "IgGM",
+    "entry": "design.py",
+    "assets": [
+      "checkpoints/esm_ppi_650m_ab.pth",
+      "checkpoints/antibody_design_trunk.pth",
+      "checkpoints/igso3_buffer.pth"
+    ],
+    "source": "https://github.com/TencentAI4S/IgGM#-getting-started",
+    "install_guide": "按上游 environment.yaml 和对应 wheel 说明安装。核对 design.py、IgGM 环境和站点期望的 checkpoint 文件。"
+  },
+  "proteinmpnn": {
+    "label": "ProteinMPNN",
+    "role": "Agent-Ab 可选序列设计",
+    "names": [
+      "ProteinMPNN",
+      "proteinmpnn"
+    ],
+    "env": "mlfold",
+    "entry": "protein_mpnn_run.py",
+    "assets": [
+      "vanilla_model_weights/v_48_020.pt"
+    ],
+    "verify": [
+      "--help"
+    ],
+    "source": "https://github.com/dauparas/ProteinMPNN",
+    "install_guide": "先检查该工具的 Python 环境中 PyTorch 和 NumPy 可用，再核对 protein_mpnn_run.py 和配置采用的模型权重。"
+  },
+  "rfdiffusion": {
+    "label": "RFdiffusion",
+    "role": "可选骨架生成",
+    "names": [
+      "RFdiffusion",
+      "rfdiffusion"
+    ],
+    "env": "SE3nv",
+    "entry": "scripts/run_inference.py",
+    "source": "https://github.com/RosettaCommons/RFdiffusion",
+    "install_guide": "按对应版本的环境说明安装。核对目标安装的 scripts/run_inference.py、相应环境和已启用模型。"
+  },
+  "rfdiffusion3": {
+    "label": "RFdiffusion3 / Foundry",
+    "role": "可选骨架生成与 RF3 预测",
+    "names": [
+      "foundry",
+      "rfdiffusion3"
+    ],
+    "env": "foundry",
+    "asset_keys": [
+      "weights"
+    ],
+    "source": "https://github.com/RosettaCommons/foundry",
+    "install_guide": "从 Foundry 上游准备环境与模型，按配置指定权重目录。"
+  },
+  "chai": {
+    "label": "Chai-1",
+    "role": "可选复合物预测",
+    "names": [
+      "chai-lab",
+      "Chai-1"
+    ],
+    "env": "chai",
+    "entry": "chai_lab/chai1.py",
+    "asset_keys": [
+      "weights"
+    ],
+    "package": "chai-lab",
+    "source": "https://github.com/chaidiscovery/chai-lab",
+    "install_guide": "在独立环境按上游安装，并准备站点配置指定的模型下载目录。"
+  },
+  "boltzgen": {
+    "label": "BoltzGen",
+    "role": "可选骨架生成",
+    "names": [
+      "boltzgen"
+    ],
+    "env": "boltzgen",
+    "env_root": true,
+    "entry": "bin/boltzgen",
+    "binary": true,
+    "asset_keys": [
+      "cache_dir"
+    ],
+    "package": "boltzgen",
+    "source": "https://github.com/HannesStark/boltzgen",
+    "install_guide": "按上游安装并核对 boltzgen 命令及实际模型缓存目录。"
+  },
+  "proteinmpnn_soluble": {
+    "label": "ProteinMPNN soluble",
+    "role": "截图中的独立软件项",
+    "names": [
+      "MPNN",
+      "ProteinMPNN",
+      "proteinmpnn"
+    ],
+    "env": "mlfold",
+    "entry": "protein_mpnn_run.py",
+    "launcher": "run_soluble_mpnn.sh",
+    "model": "v_48_020",
+    "assets": [
+      "soluble_model_weights/v_48_020.pt"
+    ],
+    "verify": [
+      "--help"
+    ],
+    "flag": "--use_soluble_model",
+    "source": "https://github.com/dauparas/ProteinMPNN",
+    "install_guide": "按 ProteinMPNN 上游说明准备 soluble 权重，核对 v_48_020.pt 和 --use_soluble_model 支持。"
+  },
+  "foldx": {
+    "label": "FoldX",
+    "role": "截图中的独立软件项",
+    "names": [
+      "FoldX",
+      "foldx"
+    ],
+    "entry": "foldx",
+    "binary": true,
+    "weight_note": "独立二进制，无神经网络模型权重",
+    "verify": [
+      "--help"
+    ],
+    "source": "https://foldxsuite.crg.eu/academic-license-info",
+    "install_guide": "通过 FoldX 官方渠道取得合适的 Linux 发行包，核对二进制权限和帮助命令。"
+  }
+}
