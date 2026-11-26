@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+export AGENT_AB_ROOT="$ROOT"
+export PYTHONPATH="$ROOT${PYTHONPATH:+:$PYTHONPATH}"
+
+python="${AGENT_AB_PYTHON:-$ROOT/.venv/bin/python}"
+if [[ ! -x "$python" ]]; then
+    printf 'Agent-Ab Python is missing. Run bash "%s/scripts/install.sh" --setup first.\n' "$ROOT" >&2
+    exit 2
+fi
+exec "$python" -m agent_ab.cli "$@"
+
